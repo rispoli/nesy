@@ -4,7 +4,7 @@
    op(700, xfy, =>).
 
 cartesian_prod(A, B, AxB) :-
-    findall(E, (member(EA, A), member(EB, B), append(EA, EB, E)), AxB).
+    findall(E, (member(EA, A), member(EB, B), union(EA, EB, E)), AxB).
 
 foldl1(F, [H | T], O) :-
     foldl(F, H, T, O).

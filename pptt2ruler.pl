@@ -32,7 +32,7 @@ tp(s(Phi, Psi), (R, O, P, [I], S, [[r(s(Phi, Psi))]])) :-
     findall(r(qm(Psi, s(Phi, Psi), Y), Y_, [[r(s(Phi, Psi))]]), (member(Y_, Q_Psi), foldl1(and, Y_, Y)), Rqm_P_Psi),
     findall(r(qm(Phi, s(Phi, Psi), X), [X, r(s(Phi, Psi))], [[r(s(Phi, Psi))]]), (member(X_, Q_Phi), foldl1(and, X_, X)), Rqm_P_Phi),
     union([r(qm(g, s(Phi, Psi)))], Rqm, B_P1),
-    union(P_, [r(qm(g, s(Phi, Psi)), [], B_P1) | Rqm_P_Psi], P__), union(P__, Rqm_P_Phi, P),
+    union(P_, [r(s(Phi, Psi), [], []), r(qm(g, s(Phi, Psi)), [], [B_P1]) | Rqm_P_Psi], P__), union(P__, Rqm_P_Phi, P),
     union(Rqm, [r(qm(g, s(Phi, Psi)))], I),
     union([-r(s(Phi, Psi)) | S_Phi], S_Psi, S).
 tp(z(Phi, Psi), (R, O, P, [I], S, [[r(z(Phi, Psi))]])) :-
@@ -47,7 +47,7 @@ tp(z(Phi, Psi), (R, O, P, [I], S, [[r(z(Phi, Psi))]])) :-
     findall(r(qm(Psi, z(Phi, Psi), Y), Y_, [[r(z(Phi, Psi))]]), (member(Y_, Q_Psi), foldl1(and, Y_, Y)), Rqm_P_Psi),
     findall(r(qm(Phi, z(Phi, Psi), X), [X, r(z(Phi, Psi))], [[r(z(Phi, Psi))]]), (member(X_, Q_Phi), foldl1(and, X_, X)), Rqm_P_Phi),
     union([r(qm(g, z(Phi, Psi)))], Rqm, B_P1),
-    union(P_, [r(qm(g, z(Phi, Psi)), [], B_P1) | Rqm_P_Psi], P__), union(P__, Rqm_P_Phi, P),
+    union(P_, [r(z(Phi, Psi), [], []), r(qm(g, z(Phi, Psi)), [], [B_P1]) | Rqm_P_Psi], P__), union(P__, Rqm_P_Phi, P),
     union(Rqm, [r(qm(g, z(Phi, Psi)))], I),
     union([r(z(Phi, Psi)) | S_Phi], S_Psi, S).
 tp(P, ([], [P], [], [[]], [], [[P]])) :-

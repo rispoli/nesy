@@ -29,3 +29,6 @@ t(Phi, Psi, (R, O, P, I, F_Future)) :-
     union([r((g, Phi => Psi)) | RXPsi], S_Past, RXPsiUS),
     subtract(I_Past, R_Past, IsR),
     cartesian_prod([RXPsiUS], IsR, I).
+
+% Test:
+?- t(c and s(b, a), (p or u(true, p)) and (q or u(true, q)), ([r((g,c and s(b,a)=> (p or u(true,p))and (q or u(true,q)))),r(s(b,a)),r(qm(g,s(b,a))),r(qm(b,s(b,a),b)),r(qm(a,s(b,a),a)),r(u(true,p)),r(u(true,q)),r(g),r(c and r(s(b,a))=> (p or u(true,p))and (q or u(true,q)))],[c,b,a,p,q],[r(qm(g,s(b,a)),[],[r(qm(g,s(b,a))),r(qm(b,s(b,a),b)),r(qm(a,s(b,a),a))]),r(qm(a,s(b,a),a),[a],[[r(s(b,a))]]),r(qm(b,s(b,a),b),[b,r(s(b,a))],[[r(s(b,a))]]),r(u(true,p),[],[[p,r(g)],[r(g),r(u(true,p))]]),r(u(true,q),[],[[q,r(g)],[r(g),r(u(true,q))]]),r(g,[],[[r(g)]]),r((g,c and s(b,a)=> (p or u(true,p))and (q or u(true,q))),[],[[r((g,c and s(b,a)=> (p or u(true,p))and (q or u(true,q))))],r(c and r(s(b,a))=> (p or u(true,p))and (q or u(true,q)))]),r(c and r(s(b,a))=> (p or u(true,p))and (q or u(true,q)),[c and r(s(b,a))],[[p,q,r(g)],[p,r(g),r(u(true,q))],[r(u(true,p)),q,r(g)],[r(u(true,p)),r(u(true,q))]])],[[r((g,c and s(b,a)=> (p or u(true,p))and (q or u(true,q)))),r(c and r(s(b,a))=> (p or u(true,p))and (q or u(true,q))),-r(s(b,a)),r(qm(b,s(b,a),b)),r(qm(a,s(b,a),a)),r(qm(g,s(b,a)))]],[r(u(true,p)),r(u(true,q))])).

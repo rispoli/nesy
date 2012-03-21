@@ -6,16 +6,9 @@
 cartesian_prod(A, B, AxB) :-
     findall(E, (member(EA, A), member(EB, B), union(EA, EB, E)), AxB).
 
-foldl1(F, [H | T], O) :-
-    foldl(F, H, T, O).
-
-foldl(_, O, [], O) :- !.
-foldl(F, I, [H | T], O) :-
-    NI =.. [F, I, H],
-    foldl(F, NI, T, O).
-
 :- [fltt2ruler].
 :- [pptt2ruler].
+:- [utils].
 
 t(Phi, Psi, (R, O, P, I, F_Future)) :-
     tp(Phi, (R_Past, O_Past, P_Past, I_Past, S_Past, Q_Past)),

@@ -81,7 +81,7 @@ ih_ho([r(RN, C, B, k(K)) | T], A_min, W, [C_arcs | IH_T], [B_arcs | HO_T], [(RN,
     b_arcs(B, RN, W, B_arcs),
     Theta_H is (((1 + A_min) * (K - 1)) / 2) * W,
     ih_ho(T, A_min, W, IH_T, HO_T, Theta_H_).
-c_arcs([], _, _, []).
+c_arcs([], RN, W, [a(r(RN), r(RN), W)]).
 c_arcs([H | T], RN, W, [a(H, r(RN), W) | H_T]) :-
     c_arcs(T, RN, W, H_T).
 b_arcs([], _, _, []).

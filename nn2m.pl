@@ -84,21 +84,24 @@ print_theta([(RN, Theta) | T], Ths, C) :-
     format(atom(C_), '~w r(~w)', [C, RN]),
     print_theta(T, Ths_, C_).
 
-print_trace([], _, Tr) :-
-    format('~w ];~n', [Tr]).
-print_trace([H | T], IO_layer, Tr) :-
-    print_trace_(IO_layer, H, Tr, Tr_),
-    print_trace(T, IO_layer, Tr_).
-print_trace_([], _, Tr, Tr_) :-
+print_trace(Trace, IO_layer, Tr) :-
+    print_trace(Trace, IO_layer, Tr, '').
+print_trace([], _, Tr, C) :-
+    format('%~w~n~w ];~n', [C, Tr]).
+print_trace([H | T], IO_layer, Tr, C) :-
+    print_trace_(IO_layer, H, Tr, Tr_, C, C_),
+    print_trace(T, IO_layer, Tr_, C_).
+print_trace_([], _, Tr, Tr_, C, C_) :-
+    atom_concat(C, ';', C_),
     format(atom(Tr_), '~w;', [Tr]).
-print_trace_([-r(_) | T], Trace_E, Tr, Tr_) :-
+print_trace_([-r(_) | T], Trace_E, Tr, Tr_, C, C_) :-
     !, format(atom(Tr__), '~w 0', [Tr]),
-    print_trace_(T, Trace_E, Tr__, Tr_).
-print_trace_([r(_) | T], Trace_E, Tr, Tr_) :-
+    print_trace_(T, Trace_E, Tr__, Tr_, C, C_).
+print_trace_([r(_) | T], Trace_E, Tr, Tr_, C, C_) :-
     !, format(atom(Tr__), '~w 0', [Tr]),
-    print_trace_(T, Trace_E, Tr__, Tr_).
-print_trace_([H | T], Trace_E, Tr, Tr_) :-
+    print_trace_(T, Trace_E, Tr__, Tr_, C, C_).
+print_trace_([H | T], Trace_E, Tr, Tr_, C, C_) :-
     (member(H, Trace_E) ->
-        (default_on(On), format(atom(Tr__), '~w ~w', [Tr, On]));
-        (default_off(Off, negative), format(atom(Tr__), '~w ~w', [Tr, Off]))),
-    print_trace_(T, Trace_E, Tr__, Tr_).
+        (default_on(On), format(atom(Tr__), '~w ~w', [Tr, On]), format(atom(C__), '~w ~w', [C, H]));
+        (default_off(Off, negative), format(atom(Tr__), '~w ~w', [Tr, Off]), C__ = C)),
+    print_trace_(T, Trace_E, Tr__, Tr_, C__, C_).

@@ -16,6 +16,7 @@ while [ "$output" != "satisfying_run =  1" ]; do
     Trace=`echo -e $Trace | sed -e "s/; trace/;\ntrace/" | tail -n1`
     cat $4 | sed -e "s/trace = \[\];/$Trace/" > $O_File
     echo "satisfying_run" >> $O_File
+    echo "Trying: $Symbolic"
     output=`$Octave -q $O_File`
 done
 

@@ -2,17 +2,28 @@ function [outputs, satifying_run] = monitoring(trace, IH, get_HO, theta_H, theta
     outputs = [];
 
     [n_traces, n_io_atoms] = size(trace);
-    trace = [trace; -1 * ones(1, n_io_atoms)];
+    trace = [trace; repmat([-1 1], 1, n_io_atoms / 2)];
     previous_output = zeros(1, n_io_atoms);
 
     for i = 1:n_traces
         input = combine(previous_output, trace(i, :), obs_range);
         HO = get_HO(trace(i + 1, :), obs_range);
-        step = consistent_feedforward(input, IH, HO, theta_H, theta_O, obs_range, a_min, beta);
+        try
+            step = consistent_feedforward(input, IH, HO, theta_H, theta_O, obs_range, a_min, beta);
+        catch
+            i
+            input
+            rethrow(lasterror);
+        end
         outputs = [outputs; step > a_min];
         previous_output = (step > a_min) + (-1 * (step <= a_min));
     end
 
+    last_state = combine(previous_output, trace(n_traces, :), obs_range);
+    inconsistent_input = consistency_check(last_state(:, obs_range(1):obs_range(2)), a_min);
+    if inconsistent_input
+        error('Path-generated inconsistency (last observation set in trace)');
+    end
     satifying_run = !unsatisfying_run(previous_output, forbidden_state_mask, a_min);
 end
 

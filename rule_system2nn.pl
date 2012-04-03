@@ -45,7 +45,7 @@ mus_ks(P, Mus, P_Aug, Max_P) :-
     mus_ks(P, [], Mus, P_Aug, Max_P).
 mus_ks([], Mus, Mus, [], 0).
 mus_ks([r(N, C, B) | T], Mus, Mus_, [r(N, C, B, k(K)) | T_], Max_P) :-
-    length(C, K),
+    length(C, K_), K is K_ + 1, % The +1 is due to the direct IH arc!
     flatten(B, B_), list_to_set(B_, Bs),
     foldl_(inc_mus, Mus, Bs, Mus__),
     mus_ks(T, Mus__, Mus_, T_, Max_P_),
@@ -81,7 +81,7 @@ ih_ho([r(RN, C, B, k(K)) | T], A_min, W, [C_arcs | IH_T], [B_arcs | HO_T], [(RN,
     b_arcs(B, RN, W, B_arcs),
     Theta_H is (((1 + A_min) * (K - 1)) / 2) * W,
     ih_ho(T, A_min, W, IH_T, HO_T, Theta_H_).
-c_arcs([], RN, W, [a(r(RN), r(RN), W)]).
+c_arcs([], RN, W, [a(r(RN), r(RN), W)]). % Direct IH arc.
 c_arcs([H | T], RN, W, [a(H, r(RN), W) | H_T]) :-
     c_arcs(T, RN, W, H_T).
 b_arcs([], _, _, []).

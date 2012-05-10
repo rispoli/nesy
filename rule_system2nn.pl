@@ -1,17 +1,16 @@
 :- [gtsi2ruler].
 :- [utils].
 
-rule_system2nn(Phi => Psi, Beta, Delta, (Initial_input, IO_layer, R, IH, HO, F, Theta_O, Theta_H, A_min, Obs_range)) :-
+rule_system2nn(Phi => Psi, Beta, Delta, (Initial_input, IO_layer, R, IH, HO, F, W, Theta_H, A_min, Obs_range)) :-
     t(Phi, Psi, (R_, O, P_, I_, F)),
     strip_generator(R_, P_, I_, R, P_ND, I),
     determinization(P_ND, O, P),
-    mus_ks(P, Mus, P_Aug, Max_P),
+    mus_ks(P, _, P_Aug, Max_P),
     A_min is ((Max_P - 1) / (Max_P + 1)) + Delta,
     W is (2 / Beta) * ((log(1 + A_min) - log(1 - A_min)) / (Max_P * (A_min - 1) + A_min + 1)),
     io_layer(R, O, IO_layer, Obs_range),
     initial_input(I, R, Initial_input),
-    ih_ho(P_Aug, A_min, W, IH_, HO, Theta_H), flatten(IH_, IH),
-    theta_O(IO_layer, Mus, A_min, W, Theta_O).
+    ih_ho(P_Aug, A_min, W, IH_, HO, Theta_H), flatten(IH_, IH).
 
 strip_generator(R_, P_, I_, R, P, I) :-
     exclude(gen_name, R_, R),
@@ -91,11 +90,3 @@ b_arcs([H | T], RN, W, [BH_arcs | B_T]) :-
 b_arcs_([], _, _, []).
 b_arcs_([H | T], RN, W, [a(r(RN), H, W) | B_T]) :-
     b_arcs_(T, RN, W, B_T).
-
-theta_O([], _, _, _, []).
-theta_O([H | T], Mus, A_min, W, [(H, Theta_O) | T_]) :-
-    (member((H, Mu), Mus) ->
-        true;
-        Mu = 0),
-    Theta_O is (((1 + A_min) * (1 - Mu)) / 2) * W,
-    theta_O(T, Mus, A_min, W, T_).

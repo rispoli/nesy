@@ -8,6 +8,7 @@ function [outputs, satifying_run] = monitoring(trace, IH, get_HO, theta_H, theta
     for i = 1:n_traces
         input = combine(previous_output, trace(i, :), obs_range);
         HO = get_HO(trace(i + 1, :), obs_range);
+        theta_O = get_theta_O(HO);
         try
             step = consistent_feedforward(input, IH, HO, theta_H, theta_O, obs_range, a_min, beta);
         catch
@@ -16,7 +17,7 @@ function [outputs, satifying_run] = monitoring(trace, IH, get_HO, theta_H, theta
             rethrow(lasterror);
         end
         outputs = [outputs; step > a_min];
-        previous_output = (step > a_min) + (-1 * (step <= a_min));
+        previous_output = step;
     end
 
     last_state = combine(previous_output, trace(n_traces, :), obs_range);
@@ -32,16 +33,10 @@ function y = combine(input, trace, obs_range)
 
     obs_output = -1 * ones(1, obs_range(2) - obs_range(1) + 1);
     for i = obs_range(1):obs_range(2)
-        if input(i) == -1 && trace(i) == -1
-            obs_output(i - obs_range(1) + 1) = -1;
-        elseif input(i) == -1 && trace(i) == 1
-            obs_output(i - obs_range(1) + 1) = 1;
-        elseif input(i) == 1 && trace(i) == -1
-            obs_output(i - obs_range(1) + 1) = 1;
-        elseif input(i) == 1 && trace(i) == 1
-            obs_output(i - obs_range(1) + 1) = 1;
-        elseif input(i) == 0
+        if input(i) == 0
             obs_output(i - obs_range(1) + 1) = trace(i);
+        else
+            obs_output(i - obs_range(1) + 1) = (input(i) + trace(i)) / 2;
         end
     end
 

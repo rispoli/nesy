@@ -8,24 +8,24 @@ default_off(-1, negative).
 nn2m(F, Beta, Delta, Mfile) :-
     nn2m(F, Beta, Delta, [], Mfile).
 nn2m(F, Beta, Delta, Trace, Mfile) :-
-    rule_system2nn(F, Beta, Delta, (Initial_input, IO_layer, H_layer, IH, HO, PT_check, Theta_O, Theta_H, A_min, (F_Ob, L_Ob))),
+    rule_system2nn(F, Beta, Delta, (Initial_input, IO_layer, H_layer, IH, HO, PT_check, W, Theta_H, A_min, (F_Ob, L_Ob))),
     reset_gensym,
     tell(Mfile),
     format('% steepness parameter~nbeta = ~w;~n~na_min = ~w;~n~n', [Beta, A_min]),
     print_array(IO_layer, Initial_input, negative, 'initial_input = [', '%'),
     print_matrix(IO_layer, H_layer, IH, ih, 'IH = [', '% rows:'),
-    format('\nfunction HO = get_HO(observation, obs_range);~n'),
+    format('~nfunction HO = get_HO(observation, obs_range)~n'),
         print_matrix(H_layer, IO_layer, HO, ho, '\tHO = [', '% rows:'),
     format('end~n~n'),
     print_theta(Theta_H, 'theta_H = [', '%'),
-    print_theta(Theta_O, 'theta_O = [', '%'),
+    format('function theta_O = get_theta_O(HO)~n\ta_min = ~w;~n\tw = ~w;~n\ttheta_O = [];~n\tfor i = 1:size(HO)(2)~n\t\tmu = sum(HO(:, i) > 0);~n\t\ttheta_O = [theta_O (((1 + a_min) * (1 - mu)) / 2) * w];~n\tend~nend~n~n', [A_min, W]),
     print_array(IO_layer, PT_check, null, 'forbidden_state_mask = [', '%'),
     format('obs_range = [ ~w ~w ];~n~n', [F_Ob, L_Ob]),
     ((Trace = []) ->
         format('trace = [];~n');
         print_trace(Trace, IO_layer, 'trace = [')),
     format('trace(1, :) = [initial_input(:, 1:(obs_range(1) - 1)), zeros(1, obs_range(2) - obs_range(1) + 1)] .+ trace(1, :);~n~n'),
-    format('[outputs, satisfying_run] = monitoring(trace, IH, @get_HO, theta_H, theta_O, obs_range, a_min, beta, forbidden_state_mask);~n'),
+    format('[outputs, satisfying_run] = monitoring(trace, IH, @get_HO, theta_H, @get_theta_O, obs_range, a_min, beta, forbidden_state_mask);~n'),
     told.
 
 print_array([], _, _, A, C) :-

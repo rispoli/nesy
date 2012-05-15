@@ -6,7 +6,7 @@ function [outputs, satifying_run] = monitoring(trace, IH, get_HO, theta_H, theta
     previous_output = zeros(1, n_io_atoms);
 
     for i = 1:n_traces
-        input = combine(previous_output, trace(i, :), obs_range);
+        input = combine(previous_output, trace(i, :), obs_range, a_min);
         HO = get_HO(trace(i + 1, :), obs_range);
         theta_O = get_theta_O(HO);
         try
@@ -20,7 +20,7 @@ function [outputs, satifying_run] = monitoring(trace, IH, get_HO, theta_H, theta
         previous_output = step;
     end
 
-    last_state = combine(previous_output, trace(n_traces, :), obs_range);
+    last_state = combine(previous_output, trace(n_traces, :), obs_range, a_min);
     inconsistent_input = consistency_check(last_state(:, obs_range(1):obs_range(2)), a_min);
     if inconsistent_input
         error('Path-generated inconsistency (last observation set in trace)');
@@ -28,19 +28,27 @@ function [outputs, satifying_run] = monitoring(trace, IH, get_HO, theta_H, theta
     satifying_run = !unsatisfying_run(previous_output, forbidden_state_mask, a_min);
 end
 
-function y = combine(input, trace, obs_range)
-    rules_output = input(:, 1:(obs_range(1) - 1)) .+ trace(:, 1:(obs_range(1) - 1));
-
-    obs_output = -1 * ones(1, obs_range(2) - obs_range(1) + 1);
-    for i = obs_range(1):obs_range(2)
-        if input(i) == 0
-            obs_output(i - obs_range(1) + 1) = trace(i);
-        else
-            obs_output(i - obs_range(1) + 1) = (input(i) + trace(i)) / 2;
+function y = combine(input, trace, obs_range, a_min)
+    if input == zeros(size(trace)) % First step
+        y = trace;
+    else
+        for i = obs_range(1):obs_range(2)
+            if (input(i) > a_min) == 1 && trace(i) != 1
+                error('Obligation does not imply observation');
+            end
         end
+        obs_output = zeros(1, obs_range(2) - obs_range(1) + 1);
+        for i = obs_range(1):2:obs_range(2)
+            if trace(i) == 1 && (input(i + 1) > a_min) == 1
+                error('Positive observation and negative obligation');
+            elseif trace(i + 1) == 1 && (input(i) > a_min) == 1
+                error('Negative observation and positive obligation');
+            end
+            obs_output(i - obs_range(1) + 1) = trace(i);
+            obs_output(i - obs_range(1) + 2) = trace(i + 1);
+        end
+        y = [input(:, 1:(obs_range(1) - 1)), obs_output];
     end
-
-    y = [rules_output, obs_output];
 end
 
 % y = true = 1 -> unsatisfying run

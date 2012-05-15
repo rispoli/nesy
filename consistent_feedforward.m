@@ -1,9 +1,4 @@
 function y = consistent_feedforward(Input, IH, HO, theta_H, theta_O, obs_range, a_min, beta)
-    inconsistent_input = consistency_check(Input(:, obs_range(1):obs_range(2)), a_min);
-    if inconsistent_input
-        error('Path-generated inconsistency');
-    end
-
     output_H = h(threshold(Input * IH, theta_H), beta);
 
     output_O = h(threshold(output_H * HO, theta_O), beta);

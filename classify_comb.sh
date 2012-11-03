@@ -16,13 +16,13 @@ n_traces=`cat $C_File | wc -l`
 
 for (( i=1; i<=$n_traces; i+=2 ));
 do
-	Symbolic=`cat $C_File | head -n$i | tail -n1`
-	Numeric=`cat $C_File | head -n$(( i + 1 )) | tail -n1`
+    Symbolic=`cat $C_File | head -n$i | tail -n1`
+    Numeric=`cat $C_File | head -n$(( i + 1 )) | tail -n1`
 
     cat $5 | sed -e "s/trace = \[\];/$Numeric/" > $O_File
     echo "satisfying_run" >> $O_File
 
-	output=""
+    output=""
     echo "Trying: $Symbolic"
     for (( j=1; j<=$4; j+=1 ));
     do
@@ -33,11 +33,11 @@ do
         fi
     done
 
-	if [ "$output" == "satisfying_run =  1" ]; then
-		echo -e "$Symbolic\n$Numeric" >> satisfying
-	else
-		echo -e "$Symbolic\n$Numeric" >> unsatisfying
-	fi
+    if [ "$output" == "satisfying_run =  1" ]; then
+        echo -e "$Symbolic\n$Numeric" >> satisfying
+    else
+        echo -e "$Symbolic\n$Numeric" >> unsatisfying
+    fi
 done
 
 rm $C_File
